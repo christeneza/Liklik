@@ -38,6 +38,7 @@
     background-color: #ff6b81;
     color: white;
     transition: all 0.2s ease;
+    z-index: 10;
   }
   .btn:active {
     transform: translateY(5px);
@@ -45,8 +46,8 @@
   }
 
   #no-btn {
-    position: absolute; /* absolute relative to wrapper */
-    left: 110%;        /* initial position to the right of Yes */
+    position: absolute; /* relative to wrapper */
+    left: 110%;        /* start next to Yes button */
     top: 0;
   }
 
@@ -91,7 +92,14 @@
     padding: 3px 6px;
     border-radius: 5px;
     font-weight: bold;
+    animation: bounce 1.5s infinite;
   }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
   #dog {
     position: absolute;
     top: 250px;
@@ -162,10 +170,13 @@
   yesBtn.addEventListener('click', () => {
     yesBtn.style.display = 'none';
     noBtn.style.display = 'none'; // hide No button
+    const firstPage = document.getElementById('first-page');
+    const secondPage = document.getElementById('second-page');
     const greeting = document.getElementById('greeting');
+
     typeText(greeting, "Yay, you won't regret it!", () => {
-      document.getElementById('first-page').style.display = 'none';
-      document.getElementById('second-page').style.display = 'block';
+      firstPage.style.display = 'none'; // hide first page completely
+      secondPage.style.display = 'block'; // show second page
       startFireworks();
       playMusicAt28();
     });
@@ -201,4 +212,60 @@
           dx: Math.random()*6-3,
           dy: Math.random()*-6,
           alpha: 1,
-          color:
+          color: `hsl(${Math.random()*360},100%,50%)`
+        });
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(255,248,231,0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+
+      for (let i = fireworks.length -1; i >=0; i--) {
+        const f = fireworks[i];
+        if (f.speed) {
+          if(!f.update()){
+            explode(f.x,f.y);
+            fireworks.splice(i,1);
+          } else {
+            ctx.beginPath();
+            ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);
+            ctx.fillStyle = f.color;
+            ctx.fill();
+          }
+        } else {
+          f.x += f.dx;
+          f.y += f.dy;
+          f.alpha -= 0.02;
+          ctx.globalAlpha = f.alpha;
+          ctx.beginPath();
+          ctx.arc(f.x,f.y,2,0,Math.PI*2);
+          ctx.fillStyle = f.color;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          if(f.alpha<=0) fireworks.splice(i,1);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // Play music at 28s
+  function playMusicAt28() {
+    const audio = document.getElementById('bg-music');
+    audio.volume = 1.0;
+    audio.addEventListener('loadedmetadata', () => {
+      audio.currentTime = 28;
+      audio.play().catch(err => console.log("Play failed:", err));
+    });
+    if(audio.readyState >=1){
+      audio.currentTime = 28;
+      audio.play().catch(err => console.log("Play failed:", err));
+    }
+  }
+</script>
+
+</body>
+</html>
