@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine's Landing Page</title>
+<style>
+  /* General Styles */
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #FFF8E7; /* light cream */
+    overflow: hidden;
+  }
+  .centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+  }
+  /* Buttons */
+  .btn {
+    padding: 15px 35px;
+    margin: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 0 #d1bfa7;
+    background-color: #ff6b81;
+    color: white;
+    transition: all 0.2s ease;
+  }
+  .btn:active {
+    transform: translateY(5px);
+    box-shadow: 0 0 0 #d1bfa7;
+  }
+  #no-btn {
+    position: relative;
+  }
+  /* Second Page */
+  #second-page {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  #fireworks {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  #dog {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    width: 200px;
+    height: auto;
+  }
+  /* Typing Animation */
+  .typing {
+    display: inline-block;
+    border-right: 2px solid #000;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+
+<!-- First Page -->
+<div id="first-page" class="centered">
+  <h1 id="greeting">Hello Lyreca, do you want to be my Valentine?</h1>
+  <button class="btn" id="yes-btn">Yes</button>
+  <button class="btn" id="no-btn">No</button>
+</div>
+
+<!-- Second Page -->
+<div id="second-page">
+  <canvas id="fireworks"></canvas>
+  <h1 id="second-text" class="centered"></h1>
+  <img src="https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif" id="dog" alt="Dancing Dog">
+  <audio id="bg-music" src="your-audio-file.mp3"></audio>
+</div>
+
+<script>
+  // No button dodge effect
+  const noBtn = document.getElementById('no-btn');
+  noBtn.addEventListener('mouseenter', () => {
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = x + 'px';
+    noBtn.style.top = y + 'px';
+  });
+
+  // Typing animation function
+  function typeText(element, text, callback) {
+    let i = 0;
+    element.textContent = '';
+    const interval = setInterval(() => {
+      element.textContent += text.charAt(i);
+      i++;
+      if (i >= text.length) {
+        clearInterval(interval);
+        if (callback) callback();
+      }
+    }, 100);
+  }
+
+  // Yes button click
+  const yesBtn = document.getElementById('yes-btn');
+  yesBtn.addEventListener('click', () => {
+    const greeting = document.getElementById('greeting');
+    typeText(greeting, "Yay, you won't regret it!", () => {
+      // After typing, show second page
+      document.getElementById('first-page').style.display = 'none';
+      document.getElementById('second-page').style.display = 'block';
+      startFireworks();
+      playMusic();
+    });
+  });
+
+  // Fireworks Animation (simple canvas fireworks)
+  function startFireworks() {
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fireworks = [];
+
+    function Firework() {
+      this.x = Math.random() * canvas.width;
+      this.y = canvas.height;
+      this.targetY = Math.random() * canvas.height/2;
+      this.radius = Math.random() * 2 + 1;
+      this.color = `hsl(${Math.random()*360},100%,50%)`;
+      this.speed = Math.random() * 3 + 2;
+    }
+
+    Firework.prototype.update = function() {
+      this.y -= this.speed;
+      if (this.y <= this.targetY) {
+        this.y = this.targetY;
+        return false; // explode
+      }
+      return true;
+    }
+
+    function explode(x, y) {
+      for (let i = 0; i < 30; i++) {
+        fireworks.push({
+          x: x,
+          y: y,
+          dx: Math.random()*6-3,
+          dy: Math.random()*-6,
+          alpha: 1,
+          color: `hsl(${Math.random()*360},100%,50%)`
+        });
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(255,248,231,0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (Math.random() < 0.05) fireworks.push(new Firework());
+
+      for (let i = fireworks.length-1; i >= 0; i--) {
+        const f = fireworks[i];
+        if (f.speed) { // firework rising
+          if (!f.update()) {
+            explode(f.x, f.y);
+            fireworks.splice(i,1);
+          } else {
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.radius, 0, Math.PI*2);
+            ctx.fillStyle = f.color;
+            ctx.fill();
+          }
+        } else { // explosion particles
+          f.x += f.dx;
+          f.y += f.dy;
+          f.alpha -= 0.02;
+          ctx.globalAlpha = f.alpha;
+          ctx.beginPath();
+          ctx.arc(f.x, f.y, 2, 0, Math.PI*2);
+          ctx.fillStyle = f.color;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          if (f.alpha <= 0) fireworks.splice(i,1);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // Play music starting at specific timestamp
+  function playMusic() {
+    const audio = document.getElementById('bg-music');
+    audio.currentTime = 28; // adjust to the timestamp you want
+    audio.play();
+  }
+
+</script>
+</body>
+</html>
