@@ -5,26 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valentine's Interactive Page</title>
 <style>
-  /* General Styles */
   body, html {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
     font-family: 'Arial', sans-serif;
-    background-color: #FFF8E7; /* light cream */
+    background-color: #FFF8E7;
     overflow: hidden;
   }
+
+  /* First Page & Second Page Text */
   .centered {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    width: 100%;
     text-align: center;
   }
+
   h1 {
     font-size: 2.5rem;
-    margin-bottom: 30px;
+    margin: 20px 0;
   }
 
   /* Buttons */
@@ -45,8 +45,8 @@
     box-shadow: 0 0 0 #d1bfa7;
   }
   #no-btn {
-    position: relative;
-    pointer-events: none; /* disables click */
+    position: absolute;
+    pointer-events: none; /* cannot be clicked */
   }
 
   /* Second Page */
@@ -63,23 +63,22 @@
     height: 100%;
     z-index: 0;
   }
+  #second-text {
+    position: absolute;
+    top: 50px; /* top space for text */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
   #dog {
     position: absolute;
-    top: 50%;
+    top: 200px; /* below the text */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     z-index: 1;
-    width: 400px; /* bigger dog image */
+    width: 400px; /* bigger image */
     height: auto;
     border-radius: 15px;
-  }
-
-  /* Typing Animation */
-  .typing {
-    display: inline-block;
-    border-right: 2px solid #000;
-    white-space: nowrap;
-    overflow: hidden;
   }
 </style>
 </head>
@@ -95,18 +94,15 @@
 <!-- Second Page -->
 <div id="second-page">
   <canvas id="fireworks"></canvas>
-  <h1 id="second-text" class="centered"></h1>
-
-  <!-- Cute Dog Image -->
+  <h1 id="second-text">Yay, you won't regret it!</h1>
   <img src="dog" id="dog" alt="Cute Dog">
-
-  <!-- Background music -->
-  <audio id="bg-music" src="Godis.mp3"></audio>
+  <audio id="bg-music" src="song"></audio>
 </div>
 
 <script>
-  // No button dodge effect (moves but cannot be clicked)
   const noBtn = document.getElementById('no-btn');
+
+  // No button moves on hover
   noBtn.addEventListener('mouseenter', () => {
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
     const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
@@ -114,7 +110,7 @@
     noBtn.style.top = y + 'px';
   });
 
-  // Typing animation function
+  // Typing animation (first page)
   function typeText(element, text, callback) {
     let i = 0;
     element.textContent = '';
@@ -131,12 +127,9 @@
   // Yes button click
   const yesBtn = document.getElementById('yes-btn');
   yesBtn.addEventListener('click', () => {
-    // Hide Yes button immediately
-    yesBtn.style.display = 'none';
-
+    yesBtn.style.display = 'none'; // disappear immediately
     const greeting = document.getElementById('greeting');
     typeText(greeting, "Yay, you won't regret it!", () => {
-      // Show second page
       document.getElementById('first-page').style.display = 'none';
       document.getElementById('second-page').style.display = 'block';
       startFireworks();
@@ -144,7 +137,7 @@
     });
   });
 
-  // Fireworks Animation
+  // Fireworks animation
   function startFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -155,7 +148,7 @@
     function Firework() {
       this.x = Math.random() * canvas.width;
       this.y = canvas.height;
-      this.targetY = Math.random() * canvas.height/2;
+      this.targetY = Math.random() * canvas.height / 2;
       this.radius = Math.random() * 2 + 1;
       this.color = `hsl(${Math.random()*360},100%,50%)`;
       this.speed = Math.random() * 3 + 2;
@@ -163,10 +156,7 @@
 
     Firework.prototype.update = function() {
       this.y -= this.speed;
-      if (this.y <= this.targetY) {
-        this.y = this.targetY;
-        return false; // explode
-      }
+      if (this.y <= this.targetY) return false;
       return true;
     }
 
@@ -175,8 +165,8 @@
         fireworks.push({
           x: x,
           y: y,
-          dx: Math.random()*6-3,
-          dy: Math.random()*-6,
+          dx: Math.random() * 6 - 3,
+          dy: Math.random() * -6,
           alpha: 1,
           color: `hsl(${Math.random()*360},100%,50%)`
         });
@@ -188,19 +178,19 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       if (Math.random() < 0.05) fireworks.push(new Firework());
 
-      for (let i = fireworks.length-1; i >= 0; i--) {
+      for (let i = fireworks.length - 1; i >= 0; i--) {
         const f = fireworks[i];
-        if (f.speed) { // firework rising
+        if (f.speed) {
           if (!f.update()) {
             explode(f.x, f.y);
-            fireworks.splice(i,1);
+            fireworks.splice(i, 1);
           } else {
             ctx.beginPath();
             ctx.arc(f.x, f.y, f.radius, 0, Math.PI*2);
             ctx.fillStyle = f.color;
             ctx.fill();
           }
-        } else { // explosion particles
+        } else {
           f.x += f.dx;
           f.y += f.dy;
           f.alpha -= 0.02;
@@ -210,7 +200,7 @@
           ctx.fillStyle = f.color;
           ctx.fill();
           ctx.globalAlpha = 1;
-          if (f.alpha <= 0) fireworks.splice(i,1);
+          if (f.alpha <= 0) fireworks.splice(i, 1);
         }
       }
       requestAnimationFrame(animate);
@@ -221,21 +211,13 @@
   // Music starting at 28s
   function playMusicAt28() {
     const audio = document.getElementById('bg-music');
-
-    // wait for audio metadata to load
     audio.addEventListener('loadedmetadata', () => {
-      audio.currentTime = 28; // start at 28s
-      audio.play().catch(e => {
-        console.log("User interaction required to play music.");
-      });
+      audio.currentTime = 28;
+      audio.play().catch(e => console.log("User interaction required."));
     });
-
-    // In case metadata is already loaded
     if (audio.readyState >= 1) {
       audio.currentTime = 28;
-      audio.play().catch(e => {
-        console.log("User interaction required to play music.");
-      });
+      audio.play().catch(e => console.log("User interaction required."));
     }
   }
 </script>
