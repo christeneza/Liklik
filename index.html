@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Valentine's Landing Page</title>
+<title>Valentine's Interactive Page</title>
 <style>
   /* General Styles */
   body, html {
@@ -26,6 +26,7 @@
     font-size: 2.5rem;
     margin-bottom: 30px;
   }
+
   /* Buttons */
   .btn {
     padding: 15px 35px;
@@ -46,6 +47,7 @@
   #no-btn {
     position: relative;
   }
+
   /* Second Page */
   #second-page {
     display: none;
@@ -66,9 +68,11 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
-    width: 200px;
+    width: 250px;
     height: auto;
+    border-radius: 15px;
   }
+
   /* Typing Animation */
   .typing {
     display: inline-block;
@@ -82,7 +86,7 @@
 
 <!-- First Page -->
 <div id="first-page" class="centered">
-  <h1 id="greeting">Hello Lyreca, do you want to be my Valentine this year?</h1>
+  <h1 id="greeting">Hello Lyreca, do you want to be my Valentine?</h1>
   <button class="btn" id="yes-btn">Yes</button>
   <button class="btn" id="no-btn">No</button>
 </div>
@@ -91,8 +95,12 @@
 <div id="second-page">
   <canvas id="fireworks"></canvas>
   <h1 id="second-text" class="centered"></h1>
-  <img src="https://i.imgur.com/9z8fG5Y.png" id="dog" alt="Dog Meme">
-  <audio id="bg-music" src="https://www.example.com/GodIs.mp3"></audio>
+
+  <!-- Cute Dog Image -->
+  <img src="https://images.dog.ceo/breeds/retriever-golden/n02099601_3002.jpg" id="dog" alt="Cute Dog">
+
+  <!-- Background music -->
+  <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_12345.mp3"></audio>
 </div>
 
 <script>
@@ -129,11 +137,11 @@
       document.getElementById('first-page').style.display = 'none';
       document.getElementById('second-page').style.display = 'block';
       startFireworks();
-      playMusic();
+      playMusicAt28();
     });
   });
 
-  // Fireworks Animation (simple canvas fireworks)
+  // Fireworks Animation
   function startFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -207,13 +215,27 @@
     animate();
   }
 
-  // Play music starting at specific timestamp
-  function playMusic() {
+  // Music that starts at 28s reliably
+  function playMusicAt28() {
     const audio = document.getElementById('bg-music');
-    audio.currentTime = 28; // adjust to the timestamp you want
-    audio.play();
-  }
 
+    // wait for audio metadata to load
+    audio.addEventListener('loadedmetadata', () => {
+      audio.currentTime = 28; // start at 28s
+      audio.play().catch(e => {
+        console.log("Autoplay blocked, user interaction required.", e);
+      });
+    });
+
+    // In case metadata is already loaded
+    if (audio.readyState >= 1) {
+      audio.currentTime = 28;
+      audio.play().catch(e => {
+        console.log("Autoplay blocked, user interaction required.", e);
+      });
+    }
+  }
 </script>
+
 </body>
 </html>
