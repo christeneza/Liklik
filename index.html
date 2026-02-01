@@ -97,10 +97,10 @@
   <h1 id="second-text" class="centered"></h1>
 
   <!-- Cute Dog Image -->
-  <img src="https://images.dog.ceo/breeds/retriever-golden/n02099601_3002.jpg" id="dog" alt="Cute Dog">
+  <img src="dog" id="dog" alt="Cute Dog">
 
   <!-- Background music -->
-  <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_12345.mp3"></audio>
+  <audio id="bg-music" src="godis.mp3"></audio>
 </div>
 
 <script>
@@ -223,7 +223,7 @@
     audio.addEventListener('loadedmetadata', () => {
       audio.currentTime = 28; // start at 28s
       audio.play().catch(e => {
-        console.log("Autoplay blocked, user interaction required.", e);
+        console.log("User interaction required to play music.");
       });
     });
 
@@ -231,7 +231,7 @@
     if (audio.readyState >= 1) {
       audio.currentTime = 28;
       audio.play().catch(e => {
-        console.log("Autoplay blocked, user interaction required.", e);
+        console.log("User interaction required to play music.");
       });
     }
   }
