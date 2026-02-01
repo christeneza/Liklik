@@ -15,9 +15,16 @@
     overflow: hidden;
   }
 
-  .centered {
-    position: absolute;
+  /* First Page Flexbox Centering */
+  #first-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
     width: 100%;
+  }
+
+  #first-page-content {
     text-align: center;
   }
 
@@ -32,6 +39,12 @@
     height: auto;
     margin-bottom: 20px;
     border-radius: 15px;
+    animation: float 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
   }
 
   /* Buttons */
@@ -123,16 +136,18 @@
 <body>
 
 <!-- First Page -->
-<div id="first-page" class="centered">
-  <!-- Centered photo -->
-  <img src="pepa.png" id="first-image" alt="Pepa">
+<div id="first-page">
+  <div id="first-page-content">
+    <!-- Centered floating photo -->
+    <img src="pepa.png" id="first-image" alt="Pepa">
 
-  <h1 id="greeting">Hello Lyreca, do you want to be my Valentine?</h1>
+    <h1 id="greeting">Hello Lyreca, do you want to be my Valentine?</h1>
 
-  <!-- Buttons wrapper -->
-  <div id="buttons-wrapper" style="display: inline-block; position: relative;">
-    <button class="btn" id="yes-btn">Yes</button>
-    <button class="btn" id="no-btn">No</button>
+    <!-- Buttons wrapper -->
+    <div id="buttons-wrapper" style="display: inline-block; position: relative;">
+      <button class="btn" id="yes-btn">Yes</button>
+      <button class="btn" id="no-btn">No</button>
+    </div>
   </div>
 </div>
 
