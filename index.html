@@ -46,6 +46,7 @@
   }
   #no-btn {
     position: relative;
+    pointer-events: none; /* disables click */
   }
 
   /* Second Page */
@@ -64,11 +65,11 @@
   }
   #dog {
     position: absolute;
-    bottom: 50px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     z-index: 1;
-    width: 250px;
+    width: 400px; /* bigger dog image */
     height: auto;
     border-radius: 15px;
   }
@@ -100,16 +101,15 @@
   <img src="dog" id="dog" alt="Cute Dog">
 
   <!-- Background music -->
-  <audio id="bg-music" src="godis.mp3"></audio>
+  <audio id="bg-music" src="Godis.mp3"></audio>
 </div>
 
 <script>
-  // No button dodge effect
+  // No button dodge effect (moves but cannot be clicked)
   const noBtn = document.getElementById('no-btn');
   noBtn.addEventListener('mouseenter', () => {
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
     const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-    noBtn.style.position = 'absolute';
     noBtn.style.left = x + 'px';
     noBtn.style.top = y + 'px';
   });
@@ -131,9 +131,12 @@
   // Yes button click
   const yesBtn = document.getElementById('yes-btn');
   yesBtn.addEventListener('click', () => {
+    // Hide Yes button immediately
+    yesBtn.style.display = 'none';
+
     const greeting = document.getElementById('greeting');
     typeText(greeting, "Yay, you won't regret it!", () => {
-      // After typing, show second page
+      // Show second page
       document.getElementById('first-page').style.display = 'none';
       document.getElementById('second-page').style.display = 'block';
       startFireworks();
@@ -215,7 +218,7 @@
     animate();
   }
 
-  // Music that starts at 28s reliably
+  // Music starting at 28s
   function playMusicAt28() {
     const audio = document.getElementById('bg-music');
 
