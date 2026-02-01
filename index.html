@@ -26,6 +26,14 @@
     margin: 20px 0;
   }
 
+  /* First page image */
+  #first-image {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+    border-radius: 15px;
+  }
+
   /* Buttons */
   .btn {
     padding: 15px 35px;
@@ -116,6 +124,9 @@
 
 <!-- First Page -->
 <div id="first-page" class="centered">
+  <!-- Centered photo -->
+  <img src="pepa.png" id="first-image" alt="Pepa">
+
   <h1 id="greeting">Hello Lyreca, do you want to be my Valentine?</h1>
 
   <!-- Buttons wrapper -->
@@ -131,7 +142,7 @@
   <h1 id="second-text">Yay, you won't regret it!</h1>
   <p id="sub-text">
     Hello Pepang! I hope you have an amazing February, the month of love. Since you said YES to my invitation, you won’t just get gifts, but also a 
-    <span class="voucher">1x free massage from Peppa</span>, redeemable any day between Feb 14–28. Love you Pepa.
+    <span class="voucher">1x free massage from Peppa</span>, from me, redeemable any day between Feb 14–28. 😄 Enjoy, with love!
   </p>
   <img src="dog" id="dog" alt="Cute Dog">
   <audio id="bg-music" src="song.mp3" preload="auto"></audio>
@@ -169,14 +180,14 @@
   // Yes button click
   yesBtn.addEventListener('click', () => {
     yesBtn.style.display = 'none';
-    noBtn.style.display = 'none'; // hide No button
+    noBtn.style.display = 'none';
     const firstPage = document.getElementById('first-page');
     const secondPage = document.getElementById('second-page');
     const greeting = document.getElementById('greeting');
 
     typeText(greeting, "Yay, you won't regret it!", () => {
-      firstPage.style.display = 'none'; // hide first page completely
-      secondPage.style.display = 'block'; // show second page
+      firstPage.style.display = 'none';
+      secondPage.style.display = 'block';
       startFireworks();
       playMusicAt28();
     });
