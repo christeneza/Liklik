@@ -15,7 +15,6 @@
     overflow: hidden;
   }
 
-  /* First Page & Second Page Text */
   .centered {
     position: absolute;
     width: 100%;
@@ -27,7 +26,6 @@
     margin: 20px 0;
   }
 
-  /* Buttons */
   .btn {
     padding: 15px 35px;
     margin: 10px;
@@ -44,12 +42,14 @@
     transform: translateY(5px);
     box-shadow: 0 0 0 #d1bfa7;
   }
+
   #no-btn {
     position: absolute;
-    pointer-events: none; /* cannot be clicked */
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  /* Second Page */
   #second-page {
     display: none;
     width: 100%;
@@ -65,18 +65,18 @@
   }
   #second-text {
     position: absolute;
-    top: 50px; /* top space for text */
+    top: 50px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
   }
   #dog {
     position: absolute;
-    top: 200px; /* below the text */
+    top: 200px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1;
-    width: 400px; /* bigger image */
+    width: 400px;
     height: auto;
     border-radius: 15px;
   }
@@ -84,23 +84,22 @@
 </head>
 <body>
 
-<!-- First Page -->
 <div id="first-page" class="centered">
   <h1 id="greeting">Hello Lyreca, do you want to be my Valentine?</h1>
   <button class="btn" id="yes-btn">Yes</button>
   <button class="btn" id="no-btn">No</button>
 </div>
 
-<!-- Second Page -->
 <div id="second-page">
   <canvas id="fireworks"></canvas>
   <h1 id="second-text">Yay, you won't regret it!</h1>
   <img src="dog" id="dog" alt="Cute Dog">
-  <audio id="bg-music" src="Godis.mp3"></audio>
+  <audio id="bg-music" src="song.mp3" preload="auto"></audio>
 </div>
 
 <script>
   const noBtn = document.getElementById('no-btn');
+  const yesBtn = document.getElementById('yes-btn');
 
   // No button moves on hover
   noBtn.addEventListener('mouseenter', () => {
@@ -110,7 +109,9 @@
     noBtn.style.top = y + 'px';
   });
 
-  // Typing animation (first page)
+  noBtn.addEventListener('click', e => e.preventDefault());
+
+  // Typing animation
   function typeText(element, text, callback) {
     let i = 0;
     element.textContent = '';
@@ -124,10 +125,9 @@
     }, 100);
   }
 
-  // Yes button click
-  const yesBtn = document.getElementById('yes-btn');
   yesBtn.addEventListener('click', () => {
-    yesBtn.style.display = 'none'; // disappear immediately
+    yesBtn.style.display = 'none';
+    noBtn.style.display = 'none';
     const greeting = document.getElementById('greeting');
     typeText(greeting, "Yay, you won't regret it!", () => {
       document.getElementById('first-page').style.display = 'none';
@@ -137,7 +137,7 @@
     });
   });
 
-  // Fireworks animation
+  // Fireworks
   function startFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -163,10 +163,9 @@
     function explode(x, y) {
       for (let i = 0; i < 30; i++) {
         fireworks.push({
-          x: x,
-          y: y,
-          dx: Math.random() * 6 - 3,
-          dy: Math.random() * -6,
+          x, y,
+          dx: Math.random()*6-3,
+          dy: Math.random()*-6,
           alpha: 1,
           color: `hsl(${Math.random()*360},100%,50%)`
         });
@@ -178,15 +177,15 @@
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       if (Math.random() < 0.05) fireworks.push(new Firework());
 
-      for (let i = fireworks.length - 1; i >= 0; i--) {
+      for (let i = fireworks.length -1; i >=0; i--) {
         const f = fireworks[i];
         if (f.speed) {
-          if (!f.update()) {
-            explode(f.x, f.y);
-            fireworks.splice(i, 1);
+          if(!f.update()){
+            explode(f.x,f.y);
+            fireworks.splice(i,1);
           } else {
             ctx.beginPath();
-            ctx.arc(f.x, f.y, f.radius, 0, Math.PI*2);
+            ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);
             ctx.fillStyle = f.color;
             ctx.fill();
           }
@@ -196,11 +195,11 @@
           f.alpha -= 0.02;
           ctx.globalAlpha = f.alpha;
           ctx.beginPath();
-          ctx.arc(f.x, f.y, 2, 0, Math.PI*2);
+          ctx.arc(f.x,f.y,2,0,Math.PI*2);
           ctx.fillStyle = f.color;
           ctx.fill();
           ctx.globalAlpha = 1;
-          if (f.alpha <= 0) fireworks.splice(i, 1);
+          if(f.alpha<=0) fireworks.splice(i,1);
         }
       }
       requestAnimationFrame(animate);
@@ -208,16 +207,17 @@
     animate();
   }
 
-  // Music starting at 28s
+  // Play music at 28s
   function playMusicAt28() {
     const audio = document.getElementById('bg-music');
+    audio.volume = 1.0; // ensure volume is full
     audio.addEventListener('loadedmetadata', () => {
       audio.currentTime = 28;
-      audio.play().catch(e => console.log("User interaction required."));
+      audio.play().catch(err => console.log("Play failed:", err));
     });
-    if (audio.readyState >= 1) {
+    if(audio.readyState >=1){
       audio.currentTime = 28;
-      audio.play().catch(e => console.log("User interaction required."));
+      audio.play().catch(err => console.log("Play failed:", err));
     }
   }
 </script>
